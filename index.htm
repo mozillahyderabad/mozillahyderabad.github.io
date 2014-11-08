@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Mozilla Hyderabad Dashboard</title>
+    <link rel='stylesheet' href='stylesheets/bootstrap.min.css' />
+    <link rel='stylesheet' href='stylesheets/bootstrap-theme.min.css' />
+    <link rel='stylesheet' href='stylesheets/overrides.css' />
+  </head>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Mozilla Hyderabad Dashboard</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" id="github-app"></div>
+  </body>
+</html>
+
+<script type="text/x-handlebars">
+    <div class="row">
+        <div class="col-md-12" style="margin-top:24px">
+            {{outlet}}
+        </div>
+    </div>
+</script>
+
+<script type="text/x-handlebars" id="index">
+    <h1>Mozilla Hyderabad Dashboard</h1>
+    <hr />
+    <p>Dashboard for Mozilla Hyderabad</p>
+    <ul>
+        {{#each}}
+        <li>{{#link-to 'user' this.login}}{{name}}{{/link-to}}</li>
+        {{/each}}
+    </ul>
+</script>
+
+<script type="text/x-handlebars" id="user">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="well">
+        <p class="text-center">
+          {{#link-to 'user' this.login}}<img {{bind-attr src=avatar_url}} style="width:140px"/>{{/link-to}}
+        </p>
+        <h4>{{#link-to 'user' this}}{{name}}{{/link-to}}</h4>
+        <p>
+          {{company}}<br />
+          {{location}}<br />
+          {{email}}<br />
+        </p>
+        <hr/>
+        <table class="table table-striped">
+          <tr><td>Followers:</td><td>{{followers}}</td></tr>
+          <tr><td>Reopsitories: </td><td>{{public_repos}}</td></tr>
+          <tr><td>Gists: </td><td>{{public_gists}}</td></tr>
+        </table>
+        <p>
+            {{#link-to "index"}}Back{{/link-to}}
+        </p>
+      </div>
+    </div>
+      <div class="col-md-8">
+          {{outlet}}
+      </div>
+  </div>
+</script>
+
+<script type="text/x-handlebars" id="user/index">
+    <h2>{{name}}'s Github</h2>
+    <hr />
+    <ul>
+        <li>{{#link-to 'repositories' this}}Repositories{{/link-to}}</li>
+        <li><a href="#">News and Events</a></li>
+        <li><a href="#">Gists</a></li>
+    </ul>
+</script>
+<script type="text/x-handlebars" id="repositories">
+    <ol class="breadcrumb">
+      <li>{{#link-to 'index'}}Devs{{/link-to}}</li>
+      <li>{{#link-to 'user' user}}{{user.name}}{{/link-to}}</li>
+      <li class="active">Repositories</li>
+    </ol>
+
+    <table class="table table-striped">
+        {{#each}}
+        <tr>
+          <td><h4>{{#link-to 'repository' this.name}}{{name}}{{/link-to}}</h4></td>
+          <td>
+
+            {{description}}
+
+          </td>
+        </tr>
+        {{/each}}
+    </table>
+</script>
+<script type="text/x-handlebars" id="repository">
+
+     <ol class="breadcrumb">
+      <li>{{#link-to 'index'}}Devs{{/link-to}}</li>
+      <li>{{#link-to 'user' user}}{{user.name}}{{/link-to}}</li>
+      <li >{{#link-to 'repositories'}}Repositories{{/link-to}}</li>
+      <li class="active">{{name}}</li>
+    </ol>
+
+    <h1>{{name}} Repo</h1>
+    <p>{{description}}</p>
+    <ul>
+        <li>Language : {{language}}</li>
+        <li>Watchers : {{watchers}}</li>
+        <li>Open Issues : {{watchers}}</li>
+        <li>Clone: <b>{{clone_url}}</b></li>
+        <li>Web: <a {{bind-attr href=html_url}} target=_blank>{{html_url}}</a></li>
+    </ul>
+    <hr/>
+    {{#unless forked}}
+    <ul class="list-inline">
+        <li>{{#link-to 'issues'}}Issues{{/link-to}}</li>
+        <li>{{#link-to 'forks'}}Forks{{/link-to}}</li>
+        <li>{{#link-to 'commits'}}Commits{{/link-to}}</li>
+        <li>{{#link-to 'repository.newissue'}}New Issue{{/link-to}}</li>
+    </ul>
+    {{else}}
+        <p class="text-muted">
+            Forked {{fromDate created_at}}
+        </p>
+    {{/unless}}
+    {{outlet}}
+</script>
+<script type="text/x-handlebars" id="issues">
+    <h4>Issues</h4>
+    <table class="table table-striped">
+    {{#each}}
+        <tr>
+            <td><img {{bind-attr src=user.avatar_url}} style="width:120px" /></td>
+            <td>
+                {{title}}
+                <hr />
+                <p class="text-muted">{{fromDate created_at}}</p>
+            </td>
+        </tr>
+    {{else}}
+        <tr>
+            <td>
+                <p class="text-muted">No issues yet!</p>
+            </td>
+        </tr>
+    {{/each}}
+    </table>
+</script>
+
+<script type="text/x-handlebars" id="forks">
+    <h4>Forks</h4>
+    <table class="table table-striped">
+    {{#each}}
+        <tr>
+            <td><img {{bind-attr src=owner.avatar_url}} style="width:120px" /></td>
+            <td>
+                {{full_name}}
+                <hr />
+                <p class="text-muted">{{fromDate created_at}}</p>
+            </td>
+        </tr>
+    {{else}}
+        <tr>
+            <td>
+                <p class="text-muted">No forks yet!</p>
+            </td>
+        </tr>
+    {{/each}}
+    </table>
+</script>
+
+<script type="text/x-handlebars" id="commits">
+    <h4>Commits</h4>
+    <table class="table table-striped">
+    {{#each}}
+        <tr>
+            <td><img {{bind-attr src=author.avatar_url}} style="width:120px" /></td>
+            <td>
+                <h5>{{sha}}</h5>
+                <p>{{commit.message}}</p>
+                <hr />
+                <p class="text-muted">{{fromDate created_at}}</p>
+            </td>
+        </tr>
+    {{else}}
+        <tr>
+            <td>
+                <p class="text-muted">No commits yet!</p>
+            </td>
+        </tr>
+    {{/each}}
+    </table>
+</script>
+
+<script type="text/x-handlebars" id="repository/newissue">
+    <h3>Create an Issue</h3>
+    <div class="form-group">
+      <label for="title">Title</label><br>
+      {{input value=issue.title class="form-control" placeholder="Title of Issue"}}
+    </div>
+    <div class="form-group">
+      <label for="body">Body</label><br>
+      {{textarea value=issue.body class="form-control" placeholder="What's your issue?" rows=5}}
+    </div>
+
+    <button class="btn btn-primary" {{action "submitIssue"}}>Submit Issue</button>
+</script>
+
+<script type="text/javascript" src="javascripts/vendor/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="javascripts/vendor/ember/handlebars-1.1.2.js"></script>
+<script type="text/javascript" src="javascripts/vendor/ember/ember-1.4.0.js"></script>
+<script type="text/javascript" src="javascripts/vendor/moment/moment.js"></script>
+
+<script>
+
+    var devs = [
+        { login: "kraghu306", name: "Raghuram" },
+        { login: "viswanathamsantosh", name: "Santosh" },
+        { login: "AkshayTiwari", name: "Akshay Tiwari" },
+   ]
+
+    window.Github = Ember.Application.create({
+        rootElement: "#github-app"
+    });
+
+    Ember.Handlebars.registerBoundHelper('fromDate', function (theDate) {
+        var today = moment();
+        var target = moment(theDate);
+        return target.from(today);
+    });
+
+    Github.Router.map(function () {
+        this.resource("user", { path: "users/:login" }, function () {
+            this.resource("repositories");
+            this.resource("repository", { path: "repositories/:reponame" }, function () {
+                this.resource("issues");
+                this.resource("forks");
+                this.resource("commits");
+                this.route("newissue");
+            });
+        });
+    });
+    Github.IndexRoute = Ember.Route.extend({
+        model: function () { return devs }
+    });
+    Github.UserRoute = Ember.Route.extend({
+        model: function (params) {
+            return Ember.$.getJSON("https://api.github.com/users/" + params.login);
+        }
+    });
+    Github.UserIndexRoute = Ember.Route.extend({
+        model: function () {
+            return this.modelFor('user');
+        }
+    });
+
+    Github.RepositoriesRoute = Ember.Route.extend({
+        model: function () {
+            var user = this.modelFor("user");
+            return Ember.$.getJSON(user.repos_url);
+        }
+    });
+    Github.RepositoryRoute = Ember.Route.extend({
+        model: function (params) {
+            var user = this.modelFor("user");
+            //build the URL for the Repo call manually
+            var url = "https://api.github.com/repos/" + user.login + "/" + params.reponame;
+            return Ember.$.getJSON(url);
+        }
+    });
+
+    Github.IssuesRoute = Ember.Route.extend({
+        model: function () {
+            var repo = this.modelFor("repository");
+            var url = repo.issues_url.replace("{/number}","");
+            return Ember.$.getJSON(url);
+        }
+    });
+    Github.CommitsRoute = Ember.Route.extend({
+        model: function () {
+            var repo = this.modelFor("repository");
+            var url = repo.commits_url.replace("{/sha}", "");
+            return Ember.$.getJSON(url);
+        }
+    });
+    Github.ForksRoute = Ember.Route.extend({
+        model: function () {
+            var repo = this.modelFor("repository");
+            return Ember.$.getJSON(repo.forks_url);
+        }
+    });
+    Github.RepositoriesController = Ember.ArrayController.extend({
+        needs: ["user"],
+        user : Ember.computed.alias("controllers.user")
+    });
+    Github.RepositoryController = Ember.ObjectController.extend({
+        needs: ["user"],
+        user: Ember.computed.alias("controllers.user"),
+        forked : Ember.computed.alias("fork")
+    });
+
+    Github.Issue = Ember.Object.extend({
+        title: "",
+        body: "",
+        isValid : function(){
+            //do some validations...
+            return true;
+        }
+    });
+
+    Github.RepositoryNewissueController = Ember.Controller.extend({
+        needs: ["repository"],
+        repo: Ember.computed.alias("controllers.repository"),
+        issue : function(){
+            return Github.Issue.create();
+        }.property("repo.model"),
+        actions: {
+            submitIssue: function () {
+                //var vals = this.getProperties("title", "body");
+                //console.log(vals);
+                //POST issues_url
+
+                var issue = this.get("issue");
+                var url = this.get("repo").get("issues_url");
+                //Ember.$.post(url, { title: title, body: body }, function (result) {
+                //    //success...
+                //    this.transitionToRoute("issues");
+                //    alert("Issue submitted");
+                //});
+                console.log("Submitted " + issue.get("title") + " to " + url);
+                //reset it
+                this.set("issue", Github.Issue.create());
+                this.transitionToRoute("issues");
+            }
+        }
+    });
+
+</script>
+
+
+
